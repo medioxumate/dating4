@@ -3,10 +3,10 @@
  * Created in PhpStorm
  * @author Brian Kiehn
  * @date 2/14/2020
- * @version 1.0
+ * @version 2.0
  * premium_member.php
  * GreenRiverDev
- * @link https://github.com/medioxumate/dating3.git
+ * @link https://github.com/medioxumate/dating4.git
  */
 
 class premium_membership extends membership
