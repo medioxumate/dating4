@@ -9,6 +9,8 @@
  * @link https://github.com/medioxumate/dating4.git
  */
 
+require("/home/bkiehngr/re_dbconfig.php");
+
 //--database structure
 /*
 CREATE TABLE member (
@@ -77,7 +79,8 @@ class database
                 DB_PASSWORD);
             //echo "Connected to database!!!";
             return $this->dbh;
-        } catch (PDOException $e) {
+        }
+        catch (PDOException $e) {
             //echo $e->getMessage();
             return $e->getMessage();
         }
@@ -102,15 +105,33 @@ class database
         $statement->bindParam(':bio', $bio, PDO::PARAM_STR);
         $statement->bindParam(':member', $member, PDO::PARAM_BOOL);
 
-        //exe
-        $success = $statement->execute();
-
-        //result
-        return $success;
+        //exe and result
+        return $statement->execute();
     }
 
-    function insertInterests($member_id, $indoor, $outdoor){
+    function insertInterests($member_id, array $indoor, array $outdoor)
+    {
+        if (in_array("Not Given", $indoor)) {
+            $sql = "INSERT INTO `member-interest`(`member_id`, `interest_id`) VALUES ";
+            foreach ($indoor as $in) {
+                $inId = "SELECT `interest_id` FROM `interest` WHERE `interest` =" . $in;
+                $sql .= "(" . $member_id . "," . $inId . ")";
+            }
+            foreach ($outdoor as $out) {
+                $outId = "SELECT `interest_id` FROM `interest` WHERE `interest` =" . $out;
+                $sql .= "(" . $member_id . "," . $outId . ")";
+            }
 
+
+            //statement
+            $statement = $this->dbh->prepare($sql);
+
+            //exe and result
+            return $statement->execute();
+        }
+        else{
+            return false;
+        }
     }
 
     function getMembers(){

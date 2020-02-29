@@ -3,10 +3,10 @@
  * Created in PhpStorm
  * @author Brian Kiehn
  * @date 2/16/2020
- * @version 1.0
+ * @version 2.0
  * dating_control.php
  * GreenRiverDev
- * @link https://github.com/medioxumate/dating3.git
+ * @link https://github.com/medioxumate/dating4.git
  */
 
 //Require validation functions
@@ -40,10 +40,10 @@ class dating_control
 
                 //if true, instantiate premium_member object , else instantiate member object
                 if (isset($_POST['pm'])) {
-                    $_SESSION ['member'] = new premium_membership($_POST['fn'], $_POST['ln'], $_POST['age'], $_POST['ph']);
+                    $_SESSION ['member'] = new premium_member($_POST['fn'], $_POST['ln'], $_POST['age'], $_POST['ph']);
                 }
                 else {
-                    $_SESSION ['member'] = new membership($_POST['fn'], $_POST['ln'], $_POST['age'], $_POST['ph']);
+                    $_SESSION ['member'] = new member($_POST['fn'], $_POST['ln'], $_POST['age'], $_POST['ph']);
                 }
 
                 //if gender is set, write it to object
@@ -112,7 +112,7 @@ class dating_control
                 }
 
                 //if member is a premium_member object
-                if ($_SESSION['member'] instanceof premium_membership == 1) {
+                if ($_SESSION['member'] instanceof premium_member == 1) {
                     // ["member"]=> object(premium_member)
                     $f3->reroute('/hobbies');
                 }
@@ -176,14 +176,37 @@ class dating_control
         echo $view->render('views/form3.html');
     }
 
-    public function profile($f3){
-        if($_SESSION['member'] instanceof premium_membership) {
+    public function profile(){
+        $view = new Template();
+
+        dating_control::insert();
+
+        if($_SESSION['member'] instanceof premium_member) {
             $inString = $_SESSION['member']->hobbyToString($_SESSION['member']->getIndoorInterests());
             $outString = $_SESSION['member']->hobbyToString($_SESSION['member']->getOutdoorInterests());
 
             $_SESSION['in'] = $inString;
             $_SESSION['out'] = $outString;
         }
+        echo $view->render('views/profile.html');
     }
 
+    //database helpers
+    function insert(){
+        $fn = $_SESSION['member']->getFname();
+        $ln = $_SESSION['member']->getFname();
+        $age = $_SESSION['member']->getAge();
+        $g = $_SESSION['member']->getGender();
+        $ph = $_SESSION['member']->getPhone();
+        $em = $_SESSION['member']->getEmail();
+        $st = $_SESSION['member']->getState();
+        $bio = $_SESSION['member']->getBio();
+        $member = $_SESSION['member'] instanceof premium_member == 1;
+
+        $GLOBALS['db']->insertMember($fn, $ln, $age, $g, $ph, $em, $st, $bio, $member);
+
+        if($member == true){
+            $id = $GLOBALS['db']->getMemberID($fn, $ln, $age, $g, $ph, $em, $st, $bio, $member);
+        }
+    }
 }

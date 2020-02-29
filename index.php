@@ -17,10 +17,13 @@ error_reporting(E_ALL);
 require_once('vendor/autoload.php');
 //Require controller
 require('controller/dating_control.php');
+//Require database
 
 //Session
 session_start();
 
+//Database
+$db = new database();
 
 //Create an instance of the Base class
 $f3 = Base::instance();
@@ -101,9 +104,6 @@ $f3->route('GET|POST /profile', function($f3) {
     $f3->set('title', 'profile');
 
     $GLOBALS['controller']->profile($f3);
-
-    $view = new Template();
-    echo $view->render('views/profile.html');
 });
 
 //Run Fat-free
