@@ -1,0 +1,64 @@
+<!--
+ * Created in PhpStorm
+ * @author Brian Kiehn
+ * @date 1/27/2020
+ * @version 2.0
+ * profile.html
+ * GreenRiverDev
+ * @link https://github.com/medioxumate/dating3.git
+ -->
+<include href="views/header.html">
+    <section class ="container-fluid">
+        <div class ="card">
+            <div class="card-header">
+                <h1>Your Profile</h1>
+            </div><!--end card-header-->
+            <div class ="card-body">
+                <div class="row"><!-- row 1-->
+                    <div class="col-6">
+                        <div class="card">
+                            <div class = "card-body">
+                                <ul class ="list-group list-group-flush">
+                                    <li class="list-group-item">Name: {{@SESSION.member->getFname()}}
+                                        {{@SESSION.member->getLname()}}</li>
+                                    <li class ="list-group-item">Gender: {{@SESSION.member->getGender()}}</li>
+                                    <li class ="list-group-item">Age: {{@SESSION.member->getAge()}}</li>
+                                    <li class ="list-group-item">Phone: {{@SESSION.member->getPhone()}}</li>
+                                    <li class ="list-group-item">Email: {{@SESSION.member->getEmail()}}</li>
+                                    <li class ="list-group-item">State: {{@SESSION.member->getState()}}</li>
+                                    <li class ="list-group-item">Seeking: {{@SESSION.member->getSeeking()}}</li>
+                                    <check if="{{ @SESSION.member instanceof premium_member }}">
+                                    <li class ="list-group-item">Interests: {{@SESSION.in}} <br>{{@SESSION.out}}</li>
+                                    </check>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class ="d-flex justify-content-center">
+                            <img class ="img-fluid rounded" src="images/globe.png" alt="Globalists"/>
+                        </div>
+                    </div>
+                </div><!-- end row 1-->
+
+                <div class ="row"><!-- row 2-->
+                    <div class="col offset-6">
+                        <h5 class="card-title">Biography: </h5>
+                        <p class ="card-text"> {{@SESSION.member->getBio()}} </p><br><br>
+                    </div>
+                </div><!-- end row 2-->
+
+                <div class ="row"><!-- row 3-->
+                    <div class ="col-12">
+                        <div class ="d-flex justify-content-center">
+                            <form method ="post" action="contact">
+                                <button type="submit" class="rounded text-center">Contact Me!</button>
+                            </form>
+                        </div>
+                    </div>
+                </div><!-- end row 3-->
+            </div><!--end card-body-->
+        </div><!-- end card-->
+    </section>
+</body>
+</html>
