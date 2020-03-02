@@ -31,30 +31,27 @@ class dating_control
         $view = new Template();
 
         //check if $POST even exists, then validate
-        if (isset($_POST['fn'])&&isset($_POST['ln'])&&isset($_POST['age'])
-            &&isset($_POST['ph'])) {
+        if (isset($_POST['fn']) && isset($_POST['ln']) && isset($_POST['age'])
+            && isset($_POST['ph'])) {
 
             //check valid strings and numbers
             if (validAge($_POST['age']) && validString($_POST['fn'])
-                && validString($_POST['ln'])&& validPhone($_POST['ph'])) {
+                && validString($_POST['ln']) && validPhone($_POST['ph'])) {
 
                 //if true, instantiate premium_member object , else instantiate member object
                 if (isset($_POST['pm'])) {
                     $_SESSION ['member'] = new premium_member($_POST['fn'], $_POST['ln'], $_POST['age'], $_POST['ph']);
-                }
-                else {
+                } else {
                     $_SESSION ['member'] = new member($_POST['fn'], $_POST['ln'], $_POST['age'], $_POST['ph']);
                 }
 
                 //if gender is set, write it to object
-                if(isset($_POST['g'])) {
+                if (isset($_POST['g'])) {
                     $_SESSION ['member']->setGender($_POST['g']);
                 }
 
                 $f3->reroute('/bio');
-            }
-
-            else {
+            } else {
                 //check for errors, if they exist, add true to the error array
                 if (!validString($_POST['fn'])) {
                     $f3->set("errors['fn']", true);
@@ -83,11 +80,12 @@ class dating_control
         echo $view->render('views/form1.html');
     }
 
-    public function form2($f3){
+    public function form2($f3)
+    {
         $view = new Template();
 
         //check if $POST even exists, then validate
-        if (isset($_POST['em'])&&isset($_POST['st'])) {
+        if (isset($_POST['em']) && isset($_POST['st'])) {
 
             //check valid email and state
             if (validEmail($_POST['em']) && validState($f3->get('states'), $_POST['st'])) {
@@ -96,18 +94,16 @@ class dating_control
                 $_SESSION ['member']->setState($_POST['st']);
 
                 //if 'seeking' is set, add to object, else add default
-                if(isset($_POST['sk'])){
+                if (isset($_POST['sk'])) {
                     $_SESSION ['member']->setSeeking($_POST['sk']);
-                }
-                else{
+                } else {
                     $_SESSION ['member']->setSeeking($f3->get('opt'));
                 }
 
                 //if bio field is empty add default to object
-                if($_POST['bio'] != '' || $_POST['bio'] != ' '){
+                if ($_POST['bio'] != '' || $_POST['bio'] != ' ') {
                     $_SESSION ['member']->setBio($f3->get('opt'));
-                }
-                else{
+                } else {
                     $_SESSION ['member']->setBio($_POST['bio']);
                 }
 
@@ -115,17 +111,15 @@ class dating_control
                 if ($_SESSION['member'] instanceof premium_member == 1) {
                     // ["member"]=> object(premium_member)
                     $f3->reroute('/hobbies');
+                } else {
+                    $f3->reroute('/profile');
                 }
-                else{
-                   $f3->reroute('/profile');
-                }
-            }
-            else {
+            } else {
                 //instantiate an error array with message
-                if(!validEmail($_POST['em'])){
+                if (!validEmail($_POST['em'])) {
                     $f3->set("errors['em']", true);
                 }
-                if(!validState($f3->get('states'), $_POST['st'])){
+                if (!validState($f3->get('states'), $_POST['st'])) {
                     $f3->set("errors['st']", true);
                 }
             }
@@ -133,24 +127,24 @@ class dating_control
         echo $view->render('views/form2.html');
     }
 
-    public function form3($f3){
+    public function form3($f3)
+    {
         $view = new Template();
 
         //check if $POST even exists, then validate
-        if(isset($_POST['in']) || isset($_POST['out'])) {
+        if (isset($_POST['in']) || isset($_POST['out'])) {
             $f3->set('userIn', $_POST['in']);
             $f3->set('userOut', $_POST['out']);
 
             //if $_POST['in'] and/or $_POST['out'] are not empty
-            if(!empty($_POST['in']) || !empty($_POST['out'])) {
+            if (!empty($_POST['in']) || !empty($_POST['out'])) {
                 // if user input is not null
                 if ($f3->get('userIn') != null) {
 
                     if (validHobby($_POST['in'], $f3->get('in'))) {
                         $_SESSION['member']->setIndoorInterests($_POST['in']);
-                    }
-                    else {
-                        $f3->set("errors['in']", 'true');
+                    } else {
+                        $f3->set("errors['in']", true);
                     }
                 }
                 //if user input is not null
@@ -158,9 +152,8 @@ class dating_control
 
                     if (validHobby($_POST['out'], $f3->get('out'))) {
                         $_SESSION['member']->setOutdoorInterests($_POST['out']);
-                    }
-                    else {
-                        $f3->set("errors['out']", 'true');
+                    } else {
+                        $f3->set("errors['out']", true);
                     }
                 }
             }
@@ -169,19 +162,19 @@ class dating_control
             if ($f3->get("errors['in']") != true || $f3->get("errors['out']") == true) {
                 $f3->reroute('/profile');
             }
-        }
-        else{
+        } else {
             $_SESSION['member']->setIndoorInterests(array($f3->get('opt')));
         }
         echo $view->render('views/form3.html');
     }
 
-    public function profile(){
+    public function profile()
+    {
         $view = new Template();
 
         dating_control::insert();
 
-        if($_SESSION['member'] instanceof premium_member) {
+        if ($_SESSION['member'] instanceof premium_member) {
             $inString = $_SESSION['member']->hobbyToString($_SESSION['member']->getIndoorInterests());
             $outString = $_SESSION['member']->hobbyToString($_SESSION['member']->getOutdoorInterests());
 
@@ -191,7 +184,24 @@ class dating_control
         echo $view->render('views/profile.html');
     }
 
-    //database helper
+    function admin(){
+        $view = new Template();
+
+        $members = $GLOBALS['db']->getMembers();
+
+        foreach ($members as $member) {
+            $interests = dating_control::printInterests($member['member_id']);
+            $member['interests'] = $interests;
+        }
+
+        $_SESSION['print'] = $members;
+
+        var_dump($_SESSION['print'][0]['interests']);
+
+        echo $view->render('views/admin.html');
+    }
+
+    //database helpers
     function insert(){
         $fn = $_SESSION['member']->getFname();
         $ln = $_SESSION['member']->getLname();
@@ -223,8 +233,9 @@ class dating_control
     function printInterests($member_id){
         $interests = $GLOBALS['db']->getInterests($member_id);
         $string ='';
-        foreach ($interests as $interest){
-            $string .= $interest.', ';
+        foreach($interests as $interest){
+            $string .= $interest['interest'].', ';
+            echo $string;
         }
         $length = strlen($string);
         $string = substr($string, 0, $length-2);
