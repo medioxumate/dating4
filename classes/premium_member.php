@@ -9,7 +9,7 @@
  * @link https://github.com/medioxumate/dating4.git
  */
 
-class premium_member extends membership
+class premium_member extends member
 {
     private $_indoorInterests;
     private $_outdoorInterests;

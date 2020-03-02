@@ -68,8 +68,9 @@ $controller = new dating_control($f3);
 //Define a default route
 $f3->route('GET /', function($f3){
     $f3->set('title', 'Round Earth Society');
-
     $view = new Template();
+    echo $GLOBALS['db']->getInterestId('pokemon go');
+
     echo $view-> render('views/home.html');
 
 });
@@ -79,10 +80,10 @@ $f3->route('GET /', function($f3){
 //First form 'Sign-up'
 $f3->route('GET|POST /Sign-up', function($f3) {
     $f3->set('title', 'Sign up');
-
     $GLOBALS['controller']->form1($f3);
 });
 
+//Second form 'bio'
 $f3->route('GET|POST /bio', function($f3) {
 
     $f3->set('title', 'Biography');
@@ -91,6 +92,7 @@ $f3->route('GET|POST /bio', function($f3) {
 
 });
 
+//Third form 'hobbies'
 $f3->route('GET|POST /hobbies', function($f3) {
 
     $f3->set('title', 'hobbies');
@@ -99,11 +101,18 @@ $f3->route('GET|POST /hobbies', function($f3) {
 
 });
 
+//profile
 $f3->route('GET|POST /profile', function($f3) {
 
     $f3->set('title', 'profile');
 
     $GLOBALS['controller']->profile($f3);
+});
+
+//admin
+$f3->route('GET /admin', function($f3) {
+
+    $f3->set('title', 'profile');
 });
 
 //Run Fat-free

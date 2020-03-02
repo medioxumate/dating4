@@ -191,22 +191,36 @@ class dating_control
         echo $view->render('views/profile.html');
     }
 
-    //database helpers
+    //database helper
     function insert(){
         $fn = $_SESSION['member']->getFname();
-        $ln = $_SESSION['member']->getFname();
+        $ln = $_SESSION['member']->getLname();
         $age = $_SESSION['member']->getAge();
         $g = $_SESSION['member']->getGender();
         $ph = $_SESSION['member']->getPhone();
         $em = $_SESSION['member']->getEmail();
+        $sk = $_SESSION['member']->getSeeking();
         $st = $_SESSION['member']->getState();
         $bio = $_SESSION['member']->getBio();
         $member = $_SESSION['member'] instanceof premium_member == 1;
 
-        $GLOBALS['db']->insertMember($fn, $ln, $age, $g, $ph, $em, $st, $bio, $member);
+        $id = $GLOBALS['db']->insertMember($fn, $ln, $age, $g, $ph, $em, $st, $sk, $bio, $member);
 
-        if($member == true){
-            $id = $GLOBALS['db']->getMemberID($fn, $ln, $age, $g, $ph, $em, $st, $bio, $member);
-        }
+        var_dump($id);
+
+//        if($member == true){
+//            $indoor = $_SESSION['member']->getIndoorInterests();
+//            $outdoor = $_SESSION['member']->getOutdoorInterests();
+//            if(in_array("Not Given", $indoor) != 1) {
+//                foreach ($indoor as $in) {
+//                    $GLOBALS['db']->insertInterest($id, $in);
+//                }
+//                foreach ($outdoor as $out){
+//                    $GLOBALS['db']->insertInterest($id, $out);
+//                }
+//
+//                var_dump($id);
+//            }
+//        }
     }
 }

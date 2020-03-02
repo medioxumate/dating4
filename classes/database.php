@@ -9,7 +9,7 @@
  * @link https://github.com/medioxumate/dating4.git
  */
 
-require("/home/bkiehngr/re_dbconfig.php");
+require("/home/bkiehngr/re-dbconfig.php");
 
 //--database structure
 /*
@@ -62,9 +62,6 @@ FOREIGN KEY (interest_id) REFERENCES interest(interest_id));
 class database
 {
     private $dbh;
-    private $array = array('tv', 'puzzles', 'movies', 'reading', 'cooking', 'playing cards',
-        'globe making', 'video games', 'swimming', 'running', 'hiking', 'metal detecting',
-        'collecting', 'horseback riding', 'pokemon go', 'bird watching');
 
     function __construct()
     {
@@ -81,7 +78,6 @@ class database
             return $this->dbh;
         }
         catch (PDOException $e) {
-            //echo $e->getMessage();
             return $e->getMessage();
         }
     }
@@ -89,10 +85,12 @@ class database
     function insertMember($fn, $ln, $age, $g, $ph, $em, $st, $bio, $member){
         //query
         $sql = "INSERT INTO member (fname, lname, age, gender, phone, email, `state`, seeking, bio, premium)
-            VALUES (:fn, :ln, :age, :g, :ph, :em, :st, :g, :bio, :member)";
+            VALUES (:fn, :ln, :age, :g, :ph, :em, :st, :g, :bio, :member);";
+
+        $id = "SELECT LAST_INSERT_ID();";
 
         //statement
-        $statement = $this->dbh->prepare($sql);
+        $statement = $this->dbh->prepare($sql.$id);
 
         //bind
         $statement->bindParam(':fn', $fn, PDO::PARAM_STR);
@@ -105,99 +103,46 @@ class database
         $statement->bindParam(':bio', $bio, PDO::PARAM_STR);
         $statement->bindParam(':member', $member, PDO::PARAM_BOOL);
 
-        //exe and result
-        return $statement->execute();
+        //exe
+        $statement->execute();
+
+        return $statement->lastInsertId();
     }
 
-    function insertInterests($member_id, array $indoor, array $outdoor)
+    function insertInterest($member_id, $interest)
     {
-        if (in_array("Not Given", $indoor)) {
-            $sql = "INSERT INTO `member-interest`(`member_id`, `interest_id`) VALUES ";
-            foreach ($indoor as $in) {
-                $inId = "SELECT `interest_id` FROM `interest` WHERE `interest` =" . $in;
-                $sql .= "(" . $member_id . "," . $inId . ")";
-            }
-            foreach ($outdoor as $out) {
-                $outId = "SELECT `interest_id` FROM `interest` WHERE `interest` =" . $out;
-                $sql .= "(" . $member_id . "," . $outId . ")";
-            }
+        $sql = "INSERT INTO `member-interest`(`member_id`, `interest_id`) VALUES (:member, :id)";
 
+        $id = database::getInterestId($interest);
 
-            //statement
-            $statement = $this->dbh->prepare($sql);
-
-            //exe and result
-            return $statement->execute();
-        }
-        else{
-            return false;
-        }
-    }
-
-    function getMembers(){
-        $sql = "SELECT * FROM member";
-
-        //statement
-        $statement = $this->dbh->prepare($sql);
-
-        //exe
-        $statement->execute();
-
-        //result
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-        return $result;
-    }
-
-    function getMemberID($fn, $ln, $age, $g, $ph, $em, $st, $bio, $member){
-        //query
-        $sql = "SELECT member_id FROM member
-            WHERE fname = :fn AND :ln = lname AND age = :age AND gender = :g AND 
-            phone = :ph AND email = :em AND `state`= :st AND premium = :member";
-
-        //statement
         $statement = $this->dbh->prepare($sql);
 
         //bind
-        $statement->bindParam(':fn', $fn, PDO::PARAM_STR);
-        $statement->bindParam(':ln', $ln, PDO::PARAM_STR);
-        $statement->bindParam(':age', $age, PDO::PARAM_INT);
-        $statement->bindParam(':g', $g, PDO::PARAM_STR);
-        $statement->bindParam(':ph', $ph, PDO::PARAM_STR);
-        $statement->bindParam(':em', $em, PDO::PARAM_STR);
-        $statement->bindParam(':st', $st, PDO::PARAM_STR);
-        $statement->bindParam(':bio', $bio, PDO::PARAM_STR);
-        $statement->bindParam(':member', $member, PDO::PARAM_BOOL);
+        $statement->bindParam(':member', $member_id, PDO::PARAM_INT);
+        $statement->bindParam(':id', $id, PDO::PARAM_INT);
 
         //exe and result
-        return $statement->execute();
+        $statement->execute();
+
+        return mysqli_query($this->dbh, $sql);
     }
 
-    function getMember($member_id){
-        $sql = "SELECT fname, lname, age, gender, phone, email, `state`,
-            seeking, bio, premium FROM member WHERE member_id = "."$member_id";
+    function getInterestId($interest){
+        $sql = "SELECT `interest_id` FROM interest WHERE `interest`= :interest";
 
         //statement
         $statement = $this->dbh->prepare($sql);
 
-        //exe
-        $statement->execute();
-
-        //result
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    function getInterests($member_id){
-        $sql = "SELECT interest.interest FROM interest RIGHT JOIN member-interest 
-            ON interest.interest_id=member-interest.interest_id
-            WHERE member_id="."$member_id";
-
-        //statement
-        $statement = $this->dbh->prepare($sql);
+        $statement->bindParam(':interest', $interest, PDO::PARAM_STR);
 
         //exe
         $statement->execute();
 
-        //result
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        $query = $statement->fetch();
+
+        return $query['interest_id'];
+
+
+
     }
 }
