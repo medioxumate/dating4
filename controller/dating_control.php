@@ -206,21 +206,17 @@ class dating_control
 
         $id = $GLOBALS['db']->insertMember($fn, $ln, $age, $g, $ph, $em, $st, $sk, $bio, $member);
 
-        var_dump($id);
-
-//        if($member == true){
-//            $indoor = $_SESSION['member']->getIndoorInterests();
-//            $outdoor = $_SESSION['member']->getOutdoorInterests();
-//            if(in_array("Not Given", $indoor) != 1) {
-//                foreach ($indoor as $in) {
-//                    $GLOBALS['db']->insertInterest($id, $in);
-//                }
-//                foreach ($outdoor as $out){
-//                    $GLOBALS['db']->insertInterest($id, $out);
-//                }
-//
-//                var_dump($id);
-//            }
-//        }
+        if($member == true){
+            $indoor = $_SESSION['member']->getIndoorInterests();
+            $outdoor = $_SESSION['member']->getOutdoorInterests();
+            if(in_array("Not Given", $indoor) != 1) {
+                foreach ($indoor as $in) {
+                    $GLOBALS['db']->insertInterest($id, $in);
+                }
+                foreach ($outdoor as $out){
+                    $GLOBALS['db']->insertInterest($id, $out);
+                }
+            }
+        }
     }
 }

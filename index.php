@@ -69,7 +69,6 @@ $controller = new dating_control($f3);
 $f3->route('GET /', function($f3){
     $f3->set('title', 'Round Earth Society');
     $view = new Template();
-    echo $GLOBALS['db']->getInterestId('pokemon go');
 
     echo $view-> render('views/home.html');
 
@@ -112,7 +111,13 @@ $f3->route('GET|POST /profile', function($f3) {
 //admin
 $f3->route('GET /admin', function($f3) {
 
-    $f3->set('title', 'profile');
+    $f3->set('title', 'admin');
+
+    $view = new Template();
+    var_dump($GLOBALS['db']->getInterests(2));
+    $_SESSION['print'] = $GLOBALS['db']->getMembers();
+    $_SESSION['id'];
+    echo $view-> render('views/admin.html');
 });
 
 //Run Fat-free

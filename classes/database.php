@@ -106,14 +106,14 @@ class database
         //exe
         $statement->execute();
 
-        return $statement->lastInsertId();
+        return $this->dbh->lastInsertId();
     }
 
     function insertInterest($member_id, $interest)
     {
-        $sql = "INSERT INTO `member-interest`(`member_id`, `interest_id`) VALUES (:member, :id)";
-
         $id = database::getInterestId($interest);
+
+        $sql = "INSERT INTO `member-interest`(`member_id`, `interest_id`) VALUES (:member, :id)";
 
         $statement = $this->dbh->prepare($sql);
 
@@ -122,9 +122,7 @@ class database
         $statement->bindParam(':id', $id, PDO::PARAM_INT);
 
         //exe and result
-        $statement->execute();
-
-        return mysqli_query($this->dbh, $sql);
+        return $statement->execute();
     }
 
     function getInterestId($interest){
@@ -141,8 +139,47 @@ class database
         $query = $statement->fetch();
 
         return $query['interest_id'];
+    }
 
+    function getInterests($member_id){
+        $sql = "SELECT `interest`.interest FROM `interest` RIGHT JOIN `member-interest` ON 
+            `interest`.interest_id = `member-interest`.interest_id AND `member-interest`.`member_id` = :id";
 
+        //statement
+        $statement = $this->dbh->prepare($sql);
 
+        $statement->bindParam(':id', $member_id, PDO::PARAM_INT);
+
+        //exe
+        $statement->execute();
+
+        //result
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    function getMembers(){
+        $sql = "SELECT * FROM `member` ORDER BY `member`.`lname` ASC";
+
+        //statement
+        $statement = $this->dbh->prepare($sql);
+
+        //exe
+        $statement->execute();
+
+        //result
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    function getMemberIds(){
+        $sql = "SELECT `member_id` FROM `member` ORDER BY `member`.`lname` ASC";
+
+        //statement
+        $statement = $this->dbh->prepare($sql);
+
+        //exe
+        $statement->execute();
+
+        //result
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 }
