@@ -32,6 +32,22 @@ class premium_member extends member
         $this->_outdoorInterests = $_outdoorInterests;
     }
 
+    //getters
+    /**
+     * @return array
+     */
+    public function getIndoorInterests(){
+        return $this->_indoorInterests;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOutdoorInterests(){
+        return $this->_outdoorInterests;
+    }
+
+    //setters
     /**
      * @param array $indoorInterests
      */

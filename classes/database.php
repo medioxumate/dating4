@@ -63,11 +63,18 @@ class database
 {
     private $dbh;
 
+    /**
+     * database constructor.
+     */
     function __construct()
     {
         $this->connect();
     }
 
+    /**
+     * connects to database
+     * @return PDO|string
+     */
     function connect()
     {
         try {
@@ -81,7 +88,21 @@ class database
         }
     }
 
-    function insertMember($fn, $ln, $age, $g, $ph, $em, $st, $bio, $member)
+    /**
+     * takes the params and inserts them into the database.
+     * @param $fn
+     * @param $ln
+     * @param $age
+     * @param $g
+     * @param $ph
+     * @param $em
+     * @param $st
+     * @param $sk
+     * @param $bio
+     * @param $member
+     * @return int - the newly created row id
+     */
+    function insertMember($fn, $ln, $age, $g, $ph, $em, $st, $sk, $bio, $member)
     {
         //query
         $sql = "INSERT INTO member (fname, lname, age, gender, phone, email, `state`, seeking, bio, premium)
@@ -100,8 +121,9 @@ class database
         $statement->bindParam(':ph', $ph, PDO::PARAM_STR);
         $statement->bindParam(':em', $em, PDO::PARAM_STR);
         $statement->bindParam(':st', $st, PDO::PARAM_STR);
+        $statement->bindParam(':sk', $sk, PDO::PARAM_STR);
         $statement->bindParam(':bio', $bio, PDO::PARAM_STR);
-        $statement->bindParam(':member', $member, PDO::PARAM_BOOL);
+        $statement->bindParam(':member', $member, PDO::PARAM_INT);
 
         //exe
         $statement->execute();
@@ -109,6 +131,11 @@ class database
         return $this->dbh->lastInsertId();
     }
 
+    /**
+     * @param $member_id
+     * @param $interest
+     * @return mixed
+     */
     function insertInterest($member_id, $interest)
     {
         $id = database::getInterestId($interest);
@@ -125,6 +152,10 @@ class database
         return $statement->execute();
     }
 
+    /**
+     * @param $interest
+     * @return int - returns the interest ID
+     */
     function getInterestId($interest)
     {
         $sql = "SELECT `interest_id` FROM interest WHERE `interest`= :interest";
@@ -142,6 +173,11 @@ class database
         return $query['interest_id'];
     }
 
+    /**
+     * @param $member_id
+     * @return mixed - returns all interests that are linked to the given
+     * member_id
+     */
     function getInterests($member_id)
     {
         $sql = "SELECT `interest`.interest FROM `interest` RIGHT JOIN `member-interest` ON 
@@ -159,6 +195,9 @@ class database
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * @return mixed - gets all members ordered by last name.
+     */
     function getMembers()
     {
         $sql = "SELECT * FROM `member` ORDER BY `member`.`lname` ASC";

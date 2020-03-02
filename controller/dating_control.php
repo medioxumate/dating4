@@ -189,20 +189,19 @@ class dating_control
 
         $members = $GLOBALS['db']->getMembers();
 
-        foreach ($members as $member) {
-            $interests = dating_control::printInterests($member['member_id']);
-            $member['interests'] = $interests;
+        for($i = 0; $i < count($members); $i++) {
+            $interests = dating_control::printInterests($members[$i]['member_id']);
+            $members[$i] = array_merge($members[$i], array('interests' => $interests));
         }
 
         $_SESSION['print'] = $members;
-
-        var_dump($_SESSION['print'][0]['interests']);
 
         echo $view->render('views/admin.html');
     }
 
     //database helpers
-    function insert(){
+    function insert()
+    {
         $fn = $_SESSION['member']->getFname();
         $ln = $_SESSION['member']->getLname();
         $age = $_SESSION['member']->getAge();
@@ -212,11 +211,16 @@ class dating_control
         $sk = $_SESSION['member']->getSeeking();
         $st = $_SESSION['member']->getState();
         $bio = $_SESSION['member']->getBio();
-        $member = $_SESSION['member'] instanceof premium_member == 1;
+        if ($_SESSION['member'] instanceof premium_member == 1) {
+            $member = true;
+        }
+        else {
+            $member = false;
+        }
 
         $id = $GLOBALS['db']->insertMember($fn, $ln, $age, $g, $ph, $em, $st, $sk, $bio, $member);
 
-        if($member == true){
+        if($member){
             $indoor = $_SESSION['member']->getIndoorInterests();
             $outdoor = $_SESSION['member']->getOutdoorInterests();
             if(in_array("Not Given", $indoor) != 1) {
@@ -230,16 +234,25 @@ class dating_control
         }
     }
 
+    //prints Interests after getting them from the database
     function printInterests($member_id){
         $interests = $GLOBALS['db']->getInterests($member_id);
         $string ='';
-        foreach($interests as $interest){
-            $string .= $interest['interest'].', ';
-            echo $string;
+        if( $interests[0]['interest'] == Null){
+            return $string;
         }
-        $length = strlen($string);
-        $string = substr($string, 0, $length-2);
+        else {
+            foreach ($interests as $interest) {
+                if ($interest == NULL) {
+                    $string .= "";
+                } else {
+                    $string .= $interest['interest'] . ', ';
+                }
+            }
+            $length = strlen($string);
+            $string = substr($string, 0, $length - 2);
 
-        return $string;
+            return $string;
+        }
     }
 }
