@@ -110,13 +110,17 @@ $f3->route('GET|POST /profile', function($f3) {
 
 //admin
 $f3->route('GET /admin', function($f3) {
+    $id = array();
 
     $f3->set('title', 'admin');
 
     $view = new Template();
-    var_dump($GLOBALS['db']->getInterests(2));
+
     $_SESSION['print'] = $GLOBALS['db']->getMembers();
-    $_SESSION['id'];
+    foreach ($_SESSION['print'] as $member){
+        $interests = $GLOBALS['db']->getInterests($member['member_id']);
+    }
+    $f3->set('interest', $id);
     echo $view-> render('views/admin.html');
 });
 

@@ -76,13 +76,13 @@ class database
                 DB_PASSWORD);
             //echo "Connected to database!!!";
             return $this->dbh;
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             return $e->getMessage();
         }
     }
 
-    function insertMember($fn, $ln, $age, $g, $ph, $em, $st, $bio, $member){
+    function insertMember($fn, $ln, $age, $g, $ph, $em, $st, $bio, $member)
+    {
         //query
         $sql = "INSERT INTO member (fname, lname, age, gender, phone, email, `state`, seeking, bio, premium)
             VALUES (:fn, :ln, :age, :g, :ph, :em, :st, :g, :bio, :member);";
@@ -90,7 +90,7 @@ class database
         $id = "SELECT LAST_INSERT_ID();";
 
         //statement
-        $statement = $this->dbh->prepare($sql.$id);
+        $statement = $this->dbh->prepare($sql . $id);
 
         //bind
         $statement->bindParam(':fn', $fn, PDO::PARAM_STR);
@@ -125,7 +125,8 @@ class database
         return $statement->execute();
     }
 
-    function getInterestId($interest){
+    function getInterestId($interest)
+    {
         $sql = "SELECT `interest_id` FROM interest WHERE `interest`= :interest";
 
         //statement
@@ -141,7 +142,8 @@ class database
         return $query['interest_id'];
     }
 
-    function getInterests($member_id){
+    function getInterests($member_id)
+    {
         $sql = "SELECT `interest`.interest FROM `interest` RIGHT JOIN `member-interest` ON 
             `interest`.interest_id = `member-interest`.interest_id AND `member-interest`.`member_id` = :id";
 
@@ -157,7 +159,8 @@ class database
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    function getMembers(){
+    function getMembers()
+    {
         $sql = "SELECT * FROM `member` ORDER BY `member`.`lname` ASC";
 
         //statement
@@ -170,16 +173,4 @@ class database
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    function getMemberIds(){
-        $sql = "SELECT `member_id` FROM `member` ORDER BY `member`.`lname` ASC";
-
-        //statement
-        $statement = $this->dbh->prepare($sql);
-
-        //exe
-        $statement->execute();
-
-        //result
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
-    }
 }

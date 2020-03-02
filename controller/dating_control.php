@@ -219,4 +219,16 @@ class dating_control
             }
         }
     }
+
+    function printInterests($member_id){
+        $interests = $GLOBALS['db']->getInterests($member_id);
+        $string ='';
+        foreach ($interests as $interest){
+            $string .= $interest.', ';
+        }
+        $length = strlen($string);
+        $string = substr($string, 0, $length-2);
+
+        return $string;
+    }
 }
