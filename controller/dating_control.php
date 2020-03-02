@@ -188,12 +188,16 @@ class dating_control
         $view = new Template();
 
         $members = $GLOBALS['db']->getMembers();
-
         for($i = 0; $i < count($members); $i++) {
-            $interests = dating_control::printInterests($members[$i]['member_id']);
-            $members[$i] = array_merge($members[$i], array('interests' => $interests));
-        }
+            if($members[$i]['premium'] != 0) {
+                $interests = dating_control::printInterests($members[$i]['member_id']);
+                $members[$i] = array_merge($members[$i], array('interests' => $interests));
+            }
+            else{
+                $members[$i] = array_merge($members[$i], array('interests' => ''));
+            }
 
+        }
         $_SESSION['print'] = $members;
 
         echo $view->render('views/admin.html');
@@ -238,21 +242,14 @@ class dating_control
     function printInterests($member_id){
         $interests = $GLOBALS['db']->getInterests($member_id);
         $string ='';
-        if( $interests[0]['interest'] == Null){
-            return $string;
-        }
-        else {
             foreach ($interests as $interest) {
-                if ($interest == NULL) {
-                    $string .= "";
-                } else {
-                    $string .= $interest['interest'] . ', ';
+                if (is_string($interest['interest']) || !is_null($interest['interest'])) {
+                    $string .= $interest['interest'].', ';
                 }
             }
             $length = strlen($string);
             $string = substr($string, 0, $length - 2);
 
             return $string;
-        }
     }
 }

@@ -110,7 +110,6 @@ $f3->route('GET|POST /profile', function($f3) {
 
 //admin
 $f3->route('GET /admin', function($f3) {
-
     $f3->set('title', 'admin');
 
     $GLOBALS['controller']->admin();

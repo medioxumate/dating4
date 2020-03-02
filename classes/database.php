@@ -106,7 +106,7 @@ class database
     {
         //query
         $sql = "INSERT INTO member (fname, lname, age, gender, phone, email, `state`, seeking, bio, premium)
-            VALUES (:fn, :ln, :age, :g, :ph, :em, :st, :g, :bio, :member);";
+            VALUES (:fn, :ln, :age, :g, :ph, :em, :st, :sk, :bio, :member);";
 
         $id = "SELECT LAST_INSERT_ID();";
 
